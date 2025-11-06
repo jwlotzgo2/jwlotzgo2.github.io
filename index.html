@@ -35,17 +35,76 @@
     .highlight {
         font-weight: bold;
     }
+
+    /* 3D CUBE */
+    #cubeContainer {
+        width: 150px;
+        height: 150px;
+        margin: 20px auto;
+        perspective: 500px;
+    }
+
+    #cube {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 0.1s linear;
+    }
+
+    .face {
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        border: 2px solid #ddd;
+        background: rgba(255,255,255,0.85);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .front  { transform: translateZ(75px); }
+    .back   { transform: rotateY(180deg) translateZ(75px); }
+    .left   { transform: rotateY(-90deg) translateZ(75px); }
+    .right  { transform: rotateY(90deg) translateZ(75px); }
+    .top    { transform: rotateX(90deg) translateZ(75px); }
+    .bottom { transform: rotateX(-90deg) translateZ(75px); }
+
+    /* BUBBLE LEVEL */
+    #levelContainer {
+        width: 200px;
+        height: 200px;
+        margin: 20px auto;
+        border-radius: 50%;
+        border: 3px solid #aaa;
+        position: relative;
+        background: #e3f7ff;
+    }
+
+    #bubble {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: #fff700;
+        position: absolute;
+        top: 85px;
+        left: 85px;
+        transition: top 0.05s, left 0.05s;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
 </style>
 </head>
 
 <body>
 
-<h1>Welcome</h1>
-<p style="text-align:center;">Here’s a quick snapshot of your device — instantly.</p>
+<h1>Your Device Snapshot</h1>
+<p style="text-align:center;">Instant stats powered by your phone sensors.</p>
 
-<!-- DEVICE METRICS SECTION -->
+<!-- DEVICE METRICS -->
 <div class="card">
-    <h2>Your Device Stats</h2>
+    <h2>Device Info</h2>
 
     <div class="metric">Device: <span id="device" class="highlight"></span></div>
     <div class="metric">OS: <span id="os" class="highlight"></span></div>
@@ -54,87 +113,149 @@
     <div class="metric">CPU Threads: <span id="cpu" class="highlight"></span></div>
     <div class="metric">GPU: <span id="gpu" class="highlight"></span></div>
     <div class="metric">Connection: <span id="network" class="highlight"></span></div>
-    <div class="metric">Estimated Speed: <span id="speed" class="highlight"></span></div>
+    <div class="metric">Speed: <span id="speed" class="highlight"></span></div>
     <div class="metric">Battery: <span id="battery" class="highlight"></span></div>
 </div>
 
-<!-- SERVICES / ELEVATOR PITCH -->
+<!-- MOTION + ORIENTATION -->
+<div class="card">
+    <h2>Motion & Orientation</h2>
+
+    <div class="metric">Tilt Alpha: <span id="alpha" class="highlight"></span></div>
+    <div class="metric">Tilt Beta: <span id="beta" class="highlight"></span></div>
+    <div class="metric">Tilt Gamma: <span id="gamma" class="highlight"></span></div>
+
+    <div class="metric">Accel X: <span id="accX" class="highlight"></span></div>
+    <div class="metric">Accel Y: <span id="accY" class="highlight"></span></div>
+    <div class="metric">Accel Z: <span id="accZ" class="highlight"></span></div>
+
+    <div class="metric">Rot Alpha: <span id="rotA" class="highlight"></span></div>
+    <div class="metric">Rot Beta: <span id="rotB" class="highlight"></span></div>
+    <div class="metric">Rot Gamma: <span id="rotC" class="highlight"></span></div>
+
+    <div class="metric">Compass Heading: <span id="heading" class="highlight"></span></div>
+</div>
+
+<!-- 3D CUBE -->
+<div class="card">
+    <h2>3D Cube</h2>
+    <div id="cubeContainer">
+        <div id="cube">
+            <div class="face front">F</div>
+            <div class="face back">B</div>
+            <div class="face left">L</div>
+            <div class="face right">R</div>
+            <div class="face top">T</div>
+            <div class="face bottom">D</div>
+        </div>
+    </div>
+</div>
+
+<!-- BUBBLE LEVEL -->
+<div class="card">
+    <h2>Bubble Level</h2>
+    <div id="levelContainer">
+        <div id="bubble"></div>
+    </div>
+</div>
+
+<!-- SERVICES -->
 <div class="card">
     <h2>What I Do</h2>
     <p>
         I help organisations turn raw data into decisions.
-        Whether you're building analytics from scratch or improving existing systems,
-        I specialise in delivering fast, practical, Microsoft-based solutions.
+        From analytics to automation, I deliver practical, 
+        Microsoft-based data solutions that generate real business value.
     </p>
-
-    <h3 style="margin-top:15px;">Services</h3>
+    <h3>Services</h3>
     <ul>
-        <li>✅ Data Analytics & Reporting</li>
-        <li>✅ Power BI Dashboards</li>
-        <li>✅ Automation with Power Automate</li>
-        <li>✅ Microsoft Fabric & Azure Data Solutions</li>
-        <li>✅ Data Modelling & Strategy</li>
-        <li>✅ Advisory, Governance & Best Practices</li>
+        <li>Data Analytics & Reporting</li>
+        <li>Power BI Dashboards</li>
+        <li>Automation (Power Automate)</li>
+        <li>Microsoft Fabric & Azure Data</li>
+        <li>Data Modelling</li>
+        <li>Advisory & Governance</li>
     </ul>
 </div>
 
-<!-- CONTACT -->
-<div class="card">
-    <h2>Get In Touch</h2>
-    <p>
-        Want to work together or learn more?<br>
-        <strong>Your contact links can go here later.</strong>
-    </p>
-</div>
-
 <script>
-// --- DEVICE INFO ---
+// BASIC DEVICE INFO
 const ua = navigator.userAgent;
-document.getElementById("device").innerText = ua.split("(")[1]?.split(")")[0] || "Unknown Device";
-document.getElementById("os").innerText =
-    navigator.userAgentData?.platform || navigator.platform || "Unknown OS";
+document.getElementById("device").innerText = ua.split("(")[1]?.split(")")[0] || "Unknown";
+document.getElementById("os").innerText = navigator.userAgentData?.platform || navigator.platform;
 document.getElementById("browser").innerText = navigator.userAgent.split(" ")[0];
+document.getElementById("screen").innerText = `${screen.width} x ${screen.height}`;
+document.getElementById("cpu").innerText = navigator.hardwareConcurrency || "N/A";
 
-// --- SCREEN ---
-document.getElementById("screen").innerText =
-    `${window.screen.width} x ${window.screen.height}`;
-
-// --- CPU ---
-document.getElementById("cpu").innerText =
-    navigator.hardwareConcurrency || "N/A";
-
-// --- GPU ---
-(async () => {
-    try {
-        const canvas = document.createElement("canvas");
-        const gl = canvas.getContext("webgl");
-        const ext = gl.getExtension("WEBGL_debug_renderer_info");
-        const gpu = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
-        document.getElementById("gpu").innerText = gpu;
-    } catch {
-        document.getElementById("gpu").innerText = "Unknown";
-    }
-})();
-
-// --- NETWORK INFO ---
-const conn = navigator.connection || navigator.webkitConnection || navigator.mozConnection;
-if (conn) {
-    document.getElementById("network").innerText = conn.effectiveType.toUpperCase();
-    document.getElementById("speed").innerText = conn.downlink + " Mbps";
-} else {
-    document.getElementById("network").innerText = "Unknown";
-    document.getElementById("speed").innerText = "Unknown";
+// GPU
+try {
+    const canvas = document.createElement("canvas");
+    const gl = canvas.getContext("webgl");
+    const ext = gl.getExtension("WEBGL_debug_renderer_info");
+    document.getElementById("gpu").innerText = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
+} catch {
+    document.getElementById("gpu").innerText = "Unknown";
 }
 
-// --- BATTERY ---
-if (navigator.getBattery) {
-    navigator.getBattery().then(b => {
-        document.getElementById("battery").innerText =
-            `${Math.round(b.level * 100)}% (${b.charging ? "Charging" : "Not Charging"})`;
+// NETWORK
+const conn = navigator.connection;
+document.getElementById("network").innerText = conn?.effectiveType || "N/A";
+document.getElementById("speed").innerText = conn?.downlink ? conn.downlink + " Mbps" : "N/A";
+
+// BATTERY
+navigator.getBattery && navigator.getBattery().then(b => {
+    document.getElementById("battery").innerText =
+        `${Math.round(b.level * 100)}% (${b.charging ? "Charging" : "Not Charging"})`;
+});
+
+// MOTION + ORIENTATION
+function setupMotion() {
+    if (DeviceMotionEvent?.requestPermission) {
+        DeviceMotionEvent.requestPermission().then(r => {
+            if (r === "granted") startTracking();
+        });
+    } else startTracking();
+}
+
+function startTracking() {
+    window.addEventListener("deviceorientation", e => {
+        document.getElementById("alpha").textContent = (e.alpha || 0).toFixed(2);
+        document.getElementById("beta").textContent  = (e.beta  || 0).toFixed(2);
+        document.getElementById("gamma").textContent = (e.gamma || 0).toFixed(2);
+
+        let heading = 360 - (e.alpha || 0);
+        document.getElementById("heading").textContent = heading.toFixed(2) + "°";
+
+        const cube = document.getElementById("cube");
+        cube.style.transform = `rotateX(${e.beta}deg) rotateY(${e.gamma}deg) rotateZ(${-e.alpha}deg)`;
+
+        const bubble = document.getElementById("bubble");
+        const x = (e.gamma || 0) * 2;
+        const y = (e.beta || 0) * 2;
+
+        let bx = 85 + x;
+        let by = 85 + y;
+        bx = Math.min(170, Math.max(0, bx));
+        by = Math.min(170, Math.max(0, by));
+
+        bubble.style.left = bx + "px";
+        bubble.style.top = by + "px";
     });
-} else {
-    document.getElementById("battery").innerText = "Unavailable";
+
+    window.addEventListener("devicemotion", e => {
+        const a = e.acceleration || {};
+        document.getElementById("accX").textContent = (a.x || 0).toFixed(2);
+        document.getElementById("accY").textContent = (a.y || 0).toFixed(2);
+        document.getElementById("accZ").textContent = (a.z || 0).toFixed(2);
+
+        const r = e.rotationRate || {};
+        document.getElementById("rotA").textContent = (r.alpha || 0).toFixed(2);
+        document.getElementById("rotB").textContent = (r.beta  || 0).toFixed(2);
+        document.getElementById("rotC").textContent = (r.gamma || 0).toFixed(2);
+    });
 }
+
+setTimeout(setupMotion, 600);
 </script>
 
 </body>
