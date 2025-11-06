@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Smart Device Card</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: #f5f5f5;
+        color: #111;
+        padding: 20px;
+    }
+
+    h1, h2 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .card {
+        background: white;
+        padding: 20px;
+        margin: 15px 0;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .metric {
+        font-size: 16px;
+        margin: 6px 0;
+    }
+
+    .highlight {
+        font-weight: bold;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>Welcome</h1>
+<p style="text-align:center;">Here’s a quick snapshot of your device — instantly.</p>
+
+<!-- DEVICE METRICS SECTION -->
+<div class="card">
+    <h2>Your Device Stats</h2>
+
+    <div class="metric">Device: <span id="device" class="highlight"></span></div>
+    <div class="metric">OS: <span id="os" class="highlight"></span></div>
+    <div class="metric">Browser: <span id="browser" class="highlight"></span></div>
+    <div class="metric">Screen: <span id="screen" class="highlight"></span></div>
+    <div class="metric">CPU Threads: <span id="cpu" class="highlight"></span></div>
+    <div class="metric">GPU: <span id="gpu" class="highlight"></span></div>
+    <div class="metric">Connection: <span id="network" class="highlight"></span></div>
+    <div class="metric">Estimated Speed: <span id="speed" class="highlight"></span></div>
+    <div class="metric">Battery: <span id="battery" class="highlight"></span></div>
+</div>
+
+<!-- SERVICES / ELEVATOR PITCH -->
+<div class="card">
+    <h2>What I Do</h2>
+    <p>
+        I help organisations turn raw data into decisions.
+        Whether you're building analytics from scratch or improving existing systems,
+        I specialise in delivering fast, practical, Microsoft-based solutions.
+    </p>
+
+    <h3 style="margin-top:15px;">Services</h3>
+    <ul>
+        <li>✅ Data Analytics & Reporting</li>
+        <li>✅ Power BI Dashboards</li>
+        <li>✅ Automation with Power Automate</li>
+        <li>✅ Microsoft Fabric & Azure Data Solutions</li>
+        <li>✅ Data Modelling & Strategy</li>
+        <li>✅ Advisory, Governance & Best Practices</li>
+    </ul>
+</div>
+
+<!-- CONTACT -->
+<div class="card">
+    <h2>Get In Touch</h2>
+    <p>
+        Want to work together or learn more?<br>
+        <strong>Your contact links can go here later.</strong>
+    </p>
+</div>
+
+<script>
+// --- DEVICE INFO ---
+const ua = navigator.userAgent;
+document.getElementById("device").innerText = ua.split("(")[1]?.split(")")[0] || "Unknown Device";
+document.getElementById("os").innerText =
+    navigator.userAgentData?.platform || navigator.platform || "Unknown OS";
+document.getElementById("browser").innerText = navigator.userAgent.split(" ")[0];
+
+// --- SCREEN ---
+document.getElementById("screen").innerText =
+    `${window.screen.width} x ${window.screen.height}`;
+
+// --- CPU ---
+document.getElementById("cpu").innerText =
+    navigator.hardwareConcurrency || "N/A";
+
+// --- GPU ---
+(async () => {
+    try {
+        const canvas = document.createElement("canvas");
+        const gl = canvas.getContext("webgl");
+        const ext = gl.getExtension("WEBGL_debug_renderer_info");
+        const gpu = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
+        document.getElementById("gpu").innerText = gpu;
+    } catch {
+        document.getElementById("gpu").innerText = "Unknown";
+    }
+})();
+
+// --- NETWORK INFO ---
+const conn = navigator.connection || navigator.webkitConnection || navigator.mozConnection;
+if (conn) {
+    document.getElementById("network").innerText = conn.effectiveType.toUpperCase();
+    document.getElementById("speed").innerText = conn.downlink + " Mbps";
+} else {
+    document.getElementById("network").innerText = "Unknown";
+    document.getElementById("speed").innerText = "Unknown";
+}
+
+// --- BATTERY ---
+if (navigator.getBattery) {
+    navigator.getBattery().then(b => {
+        document.getElementById("battery").innerText =
+            `${Math.round(b.level * 100)}% (${b.charging ? "Charging" : "Not Charging"})`;
+    });
+} else {
+    document.getElementById("battery").innerText = "Unavailable";
+}
+</script>
+
+</body>
+</html>
